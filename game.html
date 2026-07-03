@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wumpus Hunter with Sword Mechanic</title>
+    <link rel="stylesheet" href="game.css">
+</head>
+<body class="light-mode">
+    <div class="game-container">
+        <div class="header">
+            <h1>🗡️ Wumpus Hunter AI</h1>
+            <div class="mode-toggle">
+                <label class="switch">
+                    <input type="checkbox" id="darkModeToggle">
+                    <span class="slider round"></span>
+                </label>
+                <span class="mode-label">Light Mode</span>
+            </div>
+            </div>
+        <div class="stats">
+            <div id="currentScore">Score: <span id="scoreDisplay">0</span></div>
+            <div class="stat-item" id="swordStatus">Sword: No</div>
+            <div class="stat-item">Gold: <span id="gold">0/3</span></div>
+            <div class="stat-item">Moves: <span id="moves">0</span></div>
+        </div>
+
+        <div class="game-area">
+            <div class="canvas-wrapper">
+                <canvas id="gameCanvas" width="1280" height="720"></canvas>
+            </div>
+            
+            <div class="side-panel">
+                <div class="controls">
+                    <h2>Controls</h2>
+                    <div class="control-item">
+                        <span class="control-key">↑↓←→</span> <strong>Direct Move</strong>
+                    </div>
+                    <div class="control-item">
+                        <span class="control-key">ENTER</span> <strong>Pick Gold / Stab Wumpus</strong>
+                    </div>
+                    <div class="control-item">
+                        <span class="control-key">F</span> <strong>Toggle Fog of War</strong>
+                    </div>
+                </div>
+                
+                <div class="legend-area">
+                    <h2>Legend</h2>
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: var(--color-accent-1);"></div>
+                            <span>You</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: var(--color-win-gold);"></div>
+                            <span>Gold</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: var(--color-accent-2);">🗡️</div>
+                            <span>Sword</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: var(--color-wumpus-red);"></div>
+                            <span>Wumpus</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: var(--color-accent-2);"></div>
+                            <span>Breeze (Green/Cyan)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: var(--color-wumpus-red);"></div>
+                            <span>Stench (Red Overlay)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+        <div class="buttons">
+            <button onclick="game.restart()">New Game</button>
+            <button onclick="game.toggleFog()" class="secondary">Toggle Fog</button>
+            <button onclick="game.startAI()" id="aiButton">Run AI</button>
+        </div>
+    </div>
+
+    <div id="winModal" class="modal win">
+        <canvas id="confettiCanvas"></canvas> 
+        <div class="modal-content">
+            <h2>🎉 VICTORY ACHIEVED! 🎉</h2>
+            <p style="font-size: 1.3em; margin: 20px 0; font-weight: bold;">Wumpus slain and all gold collected!</p>
+            <p style="font-size: 1.5em; color: var(--color-win-gold); font-weight: bold;">Final Score: <span id="finalScore">0</span></p>
+            <div class="modal-buttons">
+                <button class="secondary" onclick="game.closeModal('winModal')">Close (Keep State)</button>
+                <button onclick="game.restart()">Start New Game</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="loseModal" class="modal lose">
+        <div class="modal-content">
+            <h2>💀 Game Over 💀</h2>
+            <p style="font-size: 1.3em; margin: 20px 0;">You fell into a pit or met the Wumpus!</p>
+            <p style="font-size: 1.5em; color: var(--color-wumpus-red); font-weight: bold;">Score: <span id="gameOverScore">0</span></p>
+            <div class="modal-buttons">
+                <button class="secondary" onclick="game.closeModal('loseModal')">Close (Keep State)</button>
+                <button onclick="game.restart()">Start New Game</button>
+            </div>
+        </div>
+    </div>
+
+<script src="game.js"></script>
+<script src="ai.js"></script>
+<script src="main.js"></script>
+</body>
+</html>

@@ -1,0 +1,471 @@
+/* START: game.css content (Mode Toggle Logic) */
+
+/* 1. DEFINE CSS VARIABLES (LIGHT MODE DEFAULT - BEIGE TWO-TONE) */
+:root {
+    /* Base Colors */
+    --color-primary-bg: #F5F5EC; /* Very soft light beige/off-white (Body) */
+    --color-secondary-bg: #EFEFE7; /* Main container background */
+    --color-tertiary-bg: #E2E2D7; /* Controls/Stats background */
+    --color-text: #595959; /* Soft dark gray text */
+    --color-border-subtle: #DCDCBE; /* Very subtle border/grid line */
+    --color-canvas-visited: #F5F5EC; /* Canvas visited cell */
+    --color-canvas-fog: #E2E2D7; /* Canvas fogged cell */
+    
+    /* Accent Colors */
+    --color-accent-1: #708A9A; /* Blue-Gray (Title/Player/AI Button) */
+    --color-accent-2: #69A197; /* Muted Green (Primary Button/Breeze) */
+    --color-secondary-btn-bg: #C3C3B4; /* Soft gray secondary button */
+    
+    /* Game Element Colors */
+    --color-win-gold: #D8B37A; /* Soft Gold */
+    --color-wumpus-red: #A85C5C; /* Muted Red-Brown */
+    --color-pit-black: #333333;
+    
+    /* Font */
+    --font-family: 'Arial', sans-serif;
+}
+
+/* 2. DARK MODE VARIABLES (HIGH CONTRAST) */
+.dark-mode {
+    --color-primary-bg: #1A1A2A; 
+    --color-secondary-bg: #212130; 
+    --color-tertiary-bg: #2A2A3E; 
+    --color-text: #D8D8E8; 
+    --color-border-subtle: #505060; 
+    --color-canvas-visited: #3a3a50; 
+    --color-canvas-fog: #212130;
+    
+    --color-accent-1: #93A5CF; /* Lighter Blue-Gray */
+    --color-accent-2: #66CCFF; /* Bright Cyan */
+    --color-secondary-btn-bg: #505060;
+
+    --color-win-gold: #FFCC66; 
+    --color-wumpus-red: #FF6F6F; 
+    --color-pit-black: #CCCCCC;
+}
+
+/* 3. BASE STYLES */
+body {
+    font-family: var(--font-family);
+    margin: 0;
+    padding: 0;
+    background-color: var(--color-primary-bg);
+    color: var(--color-text);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+h1, h2 {
+    color: var(--color-accent-1);
+    margin: 0;
+}
+
+/* 4. GAME CONTAINER & LAYOUT (UPDATED FOR COMPACTNESS) */
+.game-container {
+    background: var(--color-secondary-bg); 
+    border-radius: 20px; 
+    padding: 20px; /* UPDATED: Reduced from 30px to 20px */
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08); 
+    /* MODIFIED: Increased width to make the whole game area bigger */
+    max-width: 1200px; 
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid var(--color-border-subtle); 
+    transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+    margin: 40px auto; /* Center with top/bottom margin */
+}
+
+.header {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 15px; /* UPDATED: Reduced from 25px to 15px */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 15px;
+    border-bottom: 2px solid var(--color-border-subtle);
+}
+
+.game-area {
+    display: flex; /* Ensures canvas and panel are side-by-side */
+    justify-content: flex-start; /* Aligns items to the start (left) */
+    align-items: flex-start;
+    padding: 20px 0; /* Add top/bottom padding for separation from stats/header */
+    /* Remove any large 'gap' or 'margin-left' previously set on the wrapper */
+}
+
+.canvas-wrapper {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    line-height: 0;
+    /* MODIFIED: Allows the canvas area to take up available space */
+    flex-grow: 1; 
+    min-width: 0; /* Prevents overflow */
+}
+
+/* ADDED: Basic canvas styling for proper block display */
+#gameCanvas {
+    display: block; 
+}
+
+/* 5. STATS PANEL */
+.stats {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    margin-bottom: 15px; /* Reduced margin */
+    padding: 5px 0;
+}
+
+.stat-item, #currentScore {
+    background: var(--color-tertiary-bg);
+    padding: 8px 15px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 0.9em;
+    color: var(--color-text);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+}
+
+#swordStatus.has-sword {
+    background: linear-gradient(135deg, var(--color-win-gold), #cc7a00);
+    color: white;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+/* 6. SIDE PANEL (CONTROLS & LEGEND) */
+.side-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 280px; /* Fixed width for side panel */
+    /* MODIFIED: Prevents the side panel from shrinking */
+    flex-shrink: 0; 
+}
+
+.controls, .legend-area {
+    background: var(--color-tertiary-bg);
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    transition: background 0.3s, box-shadow 0.3s;
+}
+
+.controls h2, .legend-area h2 {
+    margin-bottom: 10px;
+    font-size: 1.2em;
+}
+
+.control-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px;
+    margin-bottom: 5px;
+    background: var(--color-primary-bg);
+    border-radius: 5px;
+    font-size: 0.9em;
+    border-left: 3px solid var(--color-accent-1);
+}
+
+.control-key {
+    font-weight: bold;
+    background: var(--color-secondary-btn-bg);
+    padding: 2px 6px;
+    border-radius: 3px;
+    color: var(--color-text);
+}
+
+/* 7. LEGEND */
+.legend {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 8px;
+    background: var(--color-primary-bg);
+    border-radius: 5px;
+    border-left: 3px solid var(--color-accent-2);
+    font-size: 0.9em;
+}
+
+.legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    text-align: center;
+    line-height: 12px;
+    font-size: 10px;
+}
+
+/* 8. BUTTONS */
+.buttons {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    justify-content: center;
+}
+
+.buttons button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    font-size: 1em;
+    flex-grow: 1; /* Make buttons expand */
+    max-width: 180px;
+}
+
+.buttons button:first-child { /* Primary button */
+    background-color: var(--color-accent-2);
+    color: white;
+}
+
+.buttons button.secondary {
+    background-color: var(--color-secondary-btn-bg);
+    color: var(--color-text);
+}
+
+.buttons button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.buttons button:active {
+    transform: translateY(0);
+}
+
+#aiButton.running {
+    background-color: var(--color-wumpus-red);
+    color: white;
+}
+
+/* 9. MODALS */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: none; /* Hidden by default */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: var(--color-secondary-bg);
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    border: 2px solid var(--color-border-subtle);
+}
+
+.modal h2 {
+    font-size: 2em;
+    margin-bottom: 10px;
+}
+
+.win .modal-content {
+    border-color: var(--color-win-gold);
+}
+.win h2 {
+    color: var(--color-win-gold);
+}
+
+.lose .modal-content {
+    border-color: var(--color-wumpus-red);
+}
+.lose h2 {
+    color: var(--color-wumpus-red);
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.modal-buttons button {
+    flex-grow: 1;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.modal-buttons button:last-child {
+    background-color: var(--color-accent-2);
+    color: white;
+    border: none;
+}
+
+.modal-buttons button.secondary {
+    background-color: var(--color-secondary-btn-bg);
+    color: var(--color-text);
+    border: 1px solid var(--color-border-subtle);
+}
+
+/* Confetti Layer */
+#confettiCanvas {
+    /* Fix: Use 'fixed' positioning relative to the viewport for screen-wide coverage */
+    position: fixed;
+    
+    /* Center the element based on the viewport */
+    top: 50%;
+    left: 50%;
+    
+    /* Crucial: Offset the element by half its own dynamically set width/height */
+    /* This perfectly centers the canvas over the main game board */
+    transform: translate(-50%, -50%);
+    
+    /* Set Z-index above the modal's background, but allow buttons to be clickable */
+    z-index: 1001; 
+    
+    /* Allows mouse clicks to pass through the canvas to the modal buttons underneath */
+    pointer-events: none; 
+}
+/* 10. DARK MODE TOGGLE SWITCH */
+.mode-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 45px;
+    height: 25px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 19px;
+    width: 19px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.4s;
+}
+
+input:checked + .slider {
+    background-color: var(--color-accent-1);
+}
+
+input:checked + .slider:before {
+    transform: translateX(20px);
+}
+
+.slider.round {
+    border-radius: 25px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+.mode-label {
+    font-size: 0.9em;
+    color: var(--color-text);
+    font-weight: bold;
+}
+
+/* DARK MODE SPECIFIC STYLES */
+.dark-mode .game-container {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+}
+
+.dark-mode .header {
+    border-color: #3a3a50;
+}
+
+.dark-mode .stats {
+    color: #d8d8e8;
+}
+
+.dark-mode .stat-item, .dark-mode #currentScore {
+    background: linear-gradient(135deg, #3a3a50, #2a2a3e);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode .stat-item.has-sword {
+    background: linear-gradient(135deg, #FFCC66, #cc9933); 
+    color: black;
+    text-shadow: none;
+}
+
+.dark-mode .controls, .dark-mode .legend-area {
+    background: #2a2a3e;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+}
+
+.dark-mode .control-item, .dark-mode .legend-item {
+    background: #3a3a50;
+    border-left: 3px solid var(--color-accent-2);
+    color: #d8d8e8;
+}
+
+.dark-mode .control-key {
+    background: #505060;
+    color: #d8d8e8;
+}
+
+.dark-mode .buttons button:first-child {
+    background-color: var(--color-accent-2);
+    color: black;
+}
+
+.dark-mode .buttons button.secondary {
+    background-color: var(--color-secondary-btn-bg);
+    color: #d8d8e8;
+}
+
+.dark-mode .buttons button:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+/* Add this new rule to game.css to shift the canvas right */
+.canvas-wrapper {
+    /* Set a specific margin on the right to control the distance to the side-panel */
+    margin-right: 15px; /* Adjust this value (e.g., 15px) to control the gap */
+    /* Ensure no margin-left is present if you want it close to the left edge */
+    margin-left: 0; 
+    border-radius: 10px; 
+    overflow: hidden; /* Crucial: ensures the sharp canvas corners are hidden by the wrapper's border-radius */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Optional: adds a nice lift/shadow */
+}
